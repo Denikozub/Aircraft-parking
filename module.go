@@ -6,13 +6,14 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"time"
 )
 
 type PlanesInfo interface {
 	LoadData (string)
 	GetNumberOfPlanes () int
 	GetArrDepByPlaneId (int) byte
-	GetDateTimeByPlaneId (int) string
+	GetDateTimeByPlaneId (int) time.Time
 	GetIntDomByPlaneId (int) byte
 	GetTerminalByPlaneId (int) int
 	GetClassByPlaneId (int) byte
@@ -53,7 +54,7 @@ type Plane struct {
 	AD byte
 
 	//time of arrival/departure
-	dateTime string
+	dateTime time.Time
 
 	//I - international, D - domestic
 	ID byte
@@ -138,6 +139,12 @@ func (pl *Planes) LoadData (name string) {
 			planeClass = 'R'
 		}
 
+		dateTimeStr := record[1]
+		dateTime, err3 := time.Parse("2006-01-02 15:04:00", dateTimeStr)
+		if err3 != nil {
+			panic(err3)
+		}
+
 		var numberPassengersStr = record[9]
 		numberPassengers, err3 := strconv.Atoi(numberPassengersStr)
 		if err3 != nil {
@@ -150,7 +157,7 @@ func (pl *Planes) LoadData (name string) {
 			busesRequired = numberPassengers / 80 + 1
 		}
 		
-		pl.data = append(pl.data, Plane{record[0][0], record[1],
+		pl.data = append(pl.data, Plane{record[0][0], dateTime,
 			record[4][0], terminalNumber, planeClass, busesRequired})
 		pl.amountPlanes += 1
 	}
@@ -160,7 +167,7 @@ func (pl *Planes) GetArrDepByPlaneId (n int) byte {
 	return pl.data[n].AD
 }
 
-func (pl *Planes) GetDateTimeByPlaneId (n int) string {
+func (pl *Planes) GetDateTimeByPlaneId (n int) time.Time {
 	return pl.data[n].dateTime
 }
 
