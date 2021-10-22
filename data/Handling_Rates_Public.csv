@@ -1,0 +1,5 @@
+﻿Name,Value
+Bus_Cost_per_Minute,10
+Away_Aircraft_Stand_Cost_per_Minute,20
+JetBridge_Aircraft_Stand_Cost_per_Minute,25
+Aircraft_Taxiing_Cost_per_Minute,30
