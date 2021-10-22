@@ -23,7 +23,7 @@ func printBusCost(ratesHandling abstract.HandlingRates) {
 }
 
 func main() {
-  folder := "C:\\Users\\kozub\\go\\src\\SVO.AERO\\data\\"
+  folder := "C:/Users/kozub/go/src/SVO.AERO/data/"
 
   planes := tables.Planes{}
   planes.LoadData(folder + "Timetable_Public.csv")

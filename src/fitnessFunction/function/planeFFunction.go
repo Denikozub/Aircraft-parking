@@ -1,8 +1,6 @@
 package function
 
-import (
-	"SVO.AERO/src/tableData/abstract"
-)
+import "SVO.AERO/src/tableData/abstract"
 
 type Function struct {
 	HandlingRates abstract.HandlingRates
@@ -11,13 +9,7 @@ type Function struct {
 	PlanesInfo  abstract.PlanesInfo
 }
 
-type FitnessFunction interface {
-	Initialization(abstract.HandlingRates)
-	CalculateServiceCost ([]int) int
-	calculatePlaneCost (int, int ) int
-}
-
-func (ff * Function) Initialization( HandlingRates abstract.HandlingRates,
+func (ff * Function) Initialize( HandlingRates abstract.HandlingRates,
 								HandlingTime abstract.HandlingTime,
 								ParkingPlacesInfo  abstract.ParkingPlacesInfo,
 								PlanesInfo  abstract.PlanesInfo) {
@@ -37,7 +29,7 @@ func (ff * Function) calculatePlaneCost (plane int, place int ) int {
 	planeClass, planeID := ff.PlanesInfo.GetClassByPlaneId(plane), ff.PlanesInfo.GetIntDomByPlaneId(plane)
 	placeTerminal := ff.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(place)
 	busCost := ff.PlanesInfo.GetNumBusesByPlaneId(plane) * ff.HandlingRates.GetBusCost() *
-		ff.ParkingPlacesInfo.GetBusTimeToTerminal(place, planeTerminal-1)
+		ff.ParkingPlacesInfo.GetBusTimeToTerminal(place, planeTerminal - 1)
 	planeAD := ff.PlanesInfo.GetArrDepByPlaneId(plane)
 	if planeAD == 'A' {
 		if ff.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(place) == planeID {
@@ -81,11 +73,9 @@ func (ff * Function) calculatePlaneCost (plane int, place int ) int {
 }
 
 func (ff * Function) CalculateServiceCost (planes []int) int {
-	cost , i := 0 , 0
-	for ; i < ff.PlanesInfo.GetNumberOfPlanes(); i++ {
+	cost, i := 0, 0
+	for ; i < len(planes); i++ {
 		cost += ff.calculatePlaneCost(i, planes[i])
 	}
 	return cost
 }
-
-
