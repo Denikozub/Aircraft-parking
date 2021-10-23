@@ -1,4 +1,4 @@
-package abstract
+package abstractTables
 
 import "time"
 
@@ -35,4 +35,11 @@ type HandlingRates interface {
 	GetAwayStandCost () int
 	GetJetBridgeStandCost () int
 	GetTaxiingCost () int
+}
+
+type AirportData struct {
+	HandlingRates HandlingRates
+	HandlingTime HandlingTime
+	ParkingPlacesInfo ParkingPlacesInfo
+	PlanesInfo PlanesInfo
 }

@@ -1,46 +1,44 @@
 package distribution
 
 import (
-  "SVO.AERO/src/FitnessFunction/abstractFunction"
-  "SVO.AERO/src/tableData/abstract"
+  "SVO.AERO/src/fitnessFunction"
+  "SVO.AERO/src/tableData/abstractTables"
   "SVO.AERO/src/tableData/tables"
   "math/rand"
   "math"
 )
 
 type Solution struct {
-	handlingRates abstract.HandlingRates
-	handlingTime abstract.HandlingTime
-	parkingPlacesInfo  abstract.ParkingPlacesInfo
-	planesInfo  abstract.PlanesInfo
-  fitnessFunction abstractFunction.FitnessFunction
+	data abstractTables.AirportData
+  parkingNumber int
+  planeNumber int
   distribution []int
 }
 
 func (sol * Solution) checkValidPPlace(dist []int, plane int, pplace int) bool {
-  planeAD := sol.planesInfo.GetArrDepByPlaneId(plane)
+  planeAD := sol.data.PlanesInfo.GetArrDepByPlaneId(plane)
   var hasJetBridge bool
   if planeAD == 'A' {
-    hasJetBridge = sol.parkingPlacesInfo.GetJetBridgeArrByPlaceId(pplace) != 'N'
+    hasJetBridge = sol.data.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(pplace) != 'N'
   } else {
-    hasJetBridge = sol.parkingPlacesInfo.GetJetBridgeDepByPlaceId(pplace) != 'N'
+    hasJetBridge = sol.data.ParkingPlacesInfo.GetJetBridgeDepByPlaceId(pplace) != 'N'
   }
   for i := 0; i < len(dist); i++ {
     if i == plane {
       continue
     }
     // check time intersection TODO: mnogo vsego (taxiing time everywhere, no constant / matrix)
-    if planeAD == sol.planesInfo.GetArrDepByPlaneId(i) {
-      if math.Abs(sol.planesInfo.GetDateTimeByPlaneId(i).Sub(sol.planesInfo.GetDateTimeByPlaneId(plane)).Minutes()) > 60 {
+    if planeAD == sol.data.PlanesInfo.GetArrDepByPlaneId(i) {
+      if math.Abs(sol.data.PlanesInfo.GetDateTimeByPlaneId(i).Sub(sol.data.PlanesInfo.GetDateTimeByPlaneId(plane)).Minutes()) > 60 {
         continue
       }
     } else if planeAD == 'A' {
-      diff := sol.planesInfo.GetDateTimeByPlaneId(i).Sub(sol.planesInfo.GetDateTimeByPlaneId(plane)).Minutes()
+      diff := sol.data.PlanesInfo.GetDateTimeByPlaneId(i).Sub(sol.data.PlanesInfo.GetDateTimeByPlaneId(plane)).Minutes()
       if diff <= 0 || diff > 2 * 60 {
         continue
       }
     } else {
-      diff := sol.planesInfo.GetDateTimeByPlaneId(plane).Sub(sol.planesInfo.GetDateTimeByPlaneId(i)).Minutes()
+      diff := sol.data.PlanesInfo.GetDateTimeByPlaneId(plane).Sub(sol.data.PlanesInfo.GetDateTimeByPlaneId(i)).Minutes()
       if diff <= 0 || diff > 2 * 60 {
         continue
       }
@@ -50,8 +48,8 @@ func (sol * Solution) checkValidPPlace(dist []int, plane int, pplace int) bool {
       return false
     }
     // check wing intersection
-    if hasJetBridge && (sol.planesInfo.GetTerminalByPlaneId(i) == sol.planesInfo.GetTerminalByPlaneId(plane)) &&
-      (sol.planesInfo.GetClassByPlaneId(i) == 'W') && (sol.planesInfo.GetClassByPlaneId(plane) == 'W') &&
+    if hasJetBridge && (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.PlanesInfo.GetTerminalByPlaneId(plane)) &&
+      (sol.data.PlanesInfo.GetClassByPlaneId(i) == 'W') && (sol.data.PlanesInfo.GetClassByPlaneId(plane) == 'W') &&
       ((dist[i] - pplace == 1) || (dist[i] - pplace == -1)) {
         return false
     }
@@ -59,22 +57,15 @@ func (sol * Solution) checkValidPPlace(dist []int, plane int, pplace int) bool {
   return true
 }
 
-func (sol * Solution) Initialize(handlingRates abstract.HandlingRates,
-								handlingTime abstract.HandlingTime,
-								parkingPlacesInfo  abstract.ParkingPlacesInfo,
-								planesInfo  abstract.PlanesInfo,
-                fitnessFunction abstractFunction.FitnessFunction) {
-	sol.handlingRates = handlingRates
-	sol.handlingTime =  handlingTime
-	sol.parkingPlacesInfo = parkingPlacesInfo
-	sol.planesInfo  = planesInfo
-  sol.fitnessFunction = fitnessFunction
-  sol.fitnessFunction.Initialize(handlingRates, handlingTime, parkingPlacesInfo, planesInfo)
-  for i := 0; i < sol.planesInfo.GetNumberOfPlanes(); i++ {
+func (sol * Solution) Initialize(data abstractTables.AirportData) {
+	sol.data = data
+  sol.parkingNumber = sol.data.ParkingPlacesInfo.GetNumberOfParkingPlaces()
+  sol.planeNumber = sol.data.PlanesInfo.GetNumberOfPlanes()
+  for i := 0; i < sol.planeNumber; i++ {
     var pplace int
-    j, max_tries := 0, sol.parkingPlacesInfo.GetNumberOfParkingPlaces() * 3
+    j, max_tries := 0, sol.parkingNumber * 3
     for ok := true; ok; ok = !sol.checkValidPPlace(sol.distribution[:i], i, pplace) {
-      pplace = rand.Intn(sol.parkingPlacesInfo.GetNumberOfParkingPlaces())
+      pplace = rand.Intn(sol.parkingNumber)
       j++
       if j > max_tries {
         panic(1)
@@ -98,11 +89,11 @@ func (sol * Solution) GetNextNeighbour() []int {
   for i := 0; i < len(sol.distribution); i++ {
     new_dist = append(new_dist, sol.distribution[i])
   }
-  plane := rand.Intn(sol.planesInfo.GetNumberOfPlanes())
+  plane := rand.Intn(sol.planeNumber)
   var pplace int
-  j, max_tries := 0, sol.parkingPlacesInfo.GetNumberOfParkingPlaces() * 3
+  j, max_tries := 0, sol.parkingNumber * 3
   for ok := true; ok; ok = !sol.checkValidPPlace(sol.distribution, plane, pplace) {
-    pplace = rand.Intn(sol.parkingPlacesInfo.GetNumberOfParkingPlaces())
+    pplace = rand.Intn(sol.parkingNumber)
     j++
     if j > max_tries {
       panic(1)
@@ -113,7 +104,7 @@ func (sol * Solution) GetNextNeighbour() []int {
 }
 
 func (sol * Solution) CalculateFitnessValue() int {
-  return sol.fitnessFunction.CalculateServiceCost(sol.distribution)
+  return fitnessFunction.CalculateServiceCost(sol.data, sol.distribution)
 }
 
 func (sol * Solution) SaveToOutput(inputName string, outputName string) {

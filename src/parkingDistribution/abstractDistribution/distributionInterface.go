@@ -1,13 +1,11 @@
 package abstractDistribution
 
 import (
-  "SVO.AERO/src/tableData/abstract"
-  "SVO.AERO/src/FitnessFunction/abstractFunction"
+  "SVO.AERO/src/tableData/abstractTables"
 )
 
 type Distribution interface {
-	Initialize(abstract.HandlingRates, abstract.HandlingTime, abstract.ParkingPlacesInfo,
-    abstract.PlanesInfo, abstractFunction.FitnessFunction)
+	Initialize(abstractTables.AirportData)
   ChangeDistribution([]int)
   GetNextNeighbour() []int
   CalculateFitnessValue() int

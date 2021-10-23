@@ -2,23 +2,23 @@ package main
 
 import (
   "fmt"
-  "SVO.AERO/src/tableData/abstract"
+  "SVO.AERO/src/tableData/abstractTables"
   "SVO.AERO/src/tableData/tables"
 )
 
-func printPlanesNum(planes abstract.PlanesInfo) {
+func printPlanesNum(planes abstractTables.PlanesInfo) {
   fmt.Println(planes.GetNumberOfPlanes())
 }
 
-func printParkingNum(pplaces abstract.ParkingPlacesInfo) {
+func printParkingNum(pplaces abstractTables.ParkingPlacesInfo) {
   fmt.Println(pplaces.GetNumberOfParkingPlaces())
 }
 
-func printRegionalJetBridgeHandlingTime(timeHandling abstract.HandlingTime) {
+func printRegionalJetBridgeHandlingTime(timeHandling abstractTables.HandlingTime) {
   fmt.Println(timeHandling.GetJetBridgeHandlingTimeByPlaneClass('R'))
 }
 
-func printBusCost(ratesHandling abstract.HandlingRates) {
+func printBusCost(ratesHandling abstractTables.HandlingRates) {
   fmt.Println(ratesHandling.GetBusCost())
 }
 
