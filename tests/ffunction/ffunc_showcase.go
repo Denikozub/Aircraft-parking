@@ -24,5 +24,5 @@ func main() {
 	for i := 0; i < 5; i++ {
 		arr = append(arr, i)
 	}
-  fmt.Println(fitnessFunction.CalculateServiceCost(data, arr))
+  fmt.Println(fitnessFunction.CalculateServiceCost(&data, arr))
 }

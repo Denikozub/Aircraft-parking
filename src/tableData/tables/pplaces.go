@@ -114,7 +114,7 @@ func (pp *ParkingPlaces) GetJetBridgeDepByPlaceId (n int) byte {
 	return pp.data[n].jbDeparture
 }
 func (pp *ParkingPlaces) GetBusTimeToTerminal (n int, t int) int {
-	return pp.data[n].timeToTerm[t]
+	return pp.data[n].timeToTerm[t - 1]
 }
 func (pp *ParkingPlaces) GetTerminalAttachedByPlaceId (n int) int {
 	return pp.data[n].attachedTerminal

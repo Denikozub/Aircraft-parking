@@ -5,7 +5,7 @@ import (
   "SVO.AERO/src/parkingDistribution/abstractDistribution"
 )
 
-func anneal(data abstractTables.AirportData, dist abstractDistribution.Distribution) {
+func anneal(data *abstractTables.AirportData, dist *abstractDistribution.Distribution) {
   // dist.Initialize(data)
   // new_dist := &dist
   // for ...

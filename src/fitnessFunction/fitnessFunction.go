@@ -2,7 +2,7 @@ package fitnessFunction
 
 import "SVO.AERO/src/tableData/abstractTables"
 
-func calculatePlaneCost (data abstractTables.AirportData, plane int, place int ) int {
+func calculatePlaneCost (data *abstractTables.AirportData, plane int, place int ) int {
 
 	// сразу считаем taxiing cost
 	sum := data.HandlingRates.GetTaxiingCost() * data.ParkingPlacesInfo.GetTaxiingTimeByPlaceId(place)
@@ -12,7 +12,7 @@ func calculatePlaneCost (data abstractTables.AirportData, plane int, place int )
 	planeClass, planeID := data.PlanesInfo.GetClassByPlaneId(plane), data.PlanesInfo.GetIntDomByPlaneId(plane)
 	placeTerminal := data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(place)
 	busCost := data.PlanesInfo.GetNumBusesByPlaneId(plane) * data.HandlingRates.GetBusCost() *
-		data.ParkingPlacesInfo.GetBusTimeToTerminal(place, planeTerminal - 1)
+		data.ParkingPlacesInfo.GetBusTimeToTerminal(place, planeTerminal)
 	planeAD := data.PlanesInfo.GetArrDepByPlaneId(plane)
 	if planeAD == 'A' {
 		if data.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(place) == planeID {
@@ -57,9 +57,9 @@ func calculatePlaneCost (data abstractTables.AirportData, plane int, place int )
 	return sum
 }
 
-func CalculateServiceCost (data abstractTables.AirportData, planes []int) int {
+func CalculateServiceCost (data *abstractTables.AirportData, planes []int) int {
 	if len(planes) != data.PlanesInfo.GetNumberOfPlanes() {
-		panic(1)
+		panic("Array lengths are different!")
 	}
 	cost, i := 0, 0
 	for ; i < len(planes); i++ {

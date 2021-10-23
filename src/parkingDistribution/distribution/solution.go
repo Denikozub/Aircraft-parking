@@ -9,7 +9,7 @@ import (
 )
 
 type Solution struct {
-	data abstractTables.AirportData
+	data *abstractTables.AirportData
   parkingNumber int
   planeNumber int
   distribution []int
@@ -57,7 +57,7 @@ func (sol * Solution) checkValidPPlace(dist []int, plane int, pplace int) bool {
   return true
 }
 
-func (sol * Solution) Initialize(data abstractTables.AirportData) {
+func (sol * Solution) Initialize(data *abstractTables.AirportData) {
 	sol.data = data
   sol.parkingNumber = sol.data.ParkingPlacesInfo.GetNumberOfParkingPlaces()
   sol.planeNumber = sol.data.PlanesInfo.GetNumberOfPlanes()
@@ -77,7 +77,7 @@ func (sol * Solution) Initialize(data abstractTables.AirportData) {
 
 func (sol * Solution) ChangeDistribution(new_dist []int) {
   if len(new_dist) != len(sol.distribution) {
-    panic(1)
+    panic("Array lengths are different!")
   }
   for i := 0; i < len(sol.distribution); i++ {
     sol.distribution[i] = new_dist[i]

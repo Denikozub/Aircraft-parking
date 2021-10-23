@@ -31,7 +31,7 @@ func main() {
   data := abstractTables.AirportData{&ratesHandling, &timeHandling, &pplaces, &planes}
 
   sol := distribution.Solution{}
-  sol.Initialize(data)
+  sol.Initialize(&data)
   fmt.Println(sol.CalculateFitnessValue())
   neighbour(&sol)
 }
