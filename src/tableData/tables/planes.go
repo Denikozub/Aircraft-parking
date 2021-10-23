@@ -58,13 +58,13 @@ func (pl *Planes) LoadData (name string) {
 			}
 			break
 		}
-		terminalNumberStr := record[5]
+		terminalNumberStr := record[6]
 		terminalNumber, err1 := strconv.Atoi(terminalNumberStr)
 		if err1 != nil {
 			panic(err1)
 		}
 
-		var numberSeatsStr = record[8]
+		var numberSeatsStr = record[9]
 		numberSeats, err2 := strconv.Atoi(numberSeatsStr)
 		if err2 != nil {
 			panic(err2)
@@ -79,13 +79,13 @@ func (pl *Planes) LoadData (name string) {
 			planeClass = 'R'
 		}
 
-		dateTimeStr := record[1]
-		dateTime, err3 := time.Parse("2006-01-02 15:04:00", dateTimeStr)
+		dateTimeStr := record[2]
+		dateTime, err3 := time.Parse("02.01.2006 15:04", dateTimeStr)
 		if err3 != nil {
 			panic(err3)
 		}
 
-		var numberPassengersStr = record[9]
+		var numberPassengersStr = record[10]
 		numberPassengers, err3 := strconv.Atoi(numberPassengersStr)
 		if err3 != nil {
 			panic(err3)
@@ -97,8 +97,8 @@ func (pl *Planes) LoadData (name string) {
 			busesRequired = numberPassengers / 80 + 1
 		}
 
-		pl.data = append(pl.data, Plane{record[0][0], dateTime,
-			record[4][0], terminalNumber, planeClass, busesRequired})
+		pl.data = append(pl.data, Plane{record[1][0], dateTime,
+			record[5][0], terminalNumber, planeClass, busesRequired})
 		pl.amountPlanes += 1
 	}
 }

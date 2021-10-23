@@ -22,7 +22,7 @@ func closeFile(file *os.File) {
 	}
 }
 
-func WriteParkingPlacesToFile(parkingPlaces []int , inputName string, outputName string) {
+func WriteParkingPlacesToFile(parkingPlaces *[]int, realParkingPlaces *[]int, inputName string, outputName string) {
 	inputFile := openFile(inputName)
 	defer closeFile(inputFile)
 	reader := csv.NewReader(inputFile)
@@ -44,7 +44,7 @@ func WriteParkingPlacesToFile(parkingPlaces []int , inputName string, outputName
 		panic(err2)
 	}
 
-	for i := 0; i < len(parkingPlaces); i++ {
+	for i := 0; i < len(*parkingPlaces); i++ {
 		record, err := reader.Read()
 		if err != nil {
 			if err != io.EOF {
@@ -52,7 +52,9 @@ func WriteParkingPlacesToFile(parkingPlaces []int , inputName string, outputName
 			}
 			break
 		}
-		record[10] = strconv.FormatInt(int64(parkingPlaces[i]), 10)
+		pPlace := (*parkingPlaces)[i]
+		pPlace = (*realParkingPlaces)[pPlace]
+		record[10] = strconv.FormatInt(int64(pPlace), 10)
 		err = writer.Write(record)
 	}
 }

@@ -21,6 +21,7 @@ type ParkingPlacesInfo interface {
 	GetBusTimeToTerminal (int, int) int
 	GetTerminalAttachedByPlaceId (int) int
 	GetTaxiingTimeByPlaceId (int) int
+	GetMatchParkingPlaces () *[]int
 }
 
 type HandlingTime interface {

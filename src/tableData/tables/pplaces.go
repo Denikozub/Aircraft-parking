@@ -28,6 +28,7 @@ type PPlace struct {
 type ParkingPlaces struct {
 	amountPlaces int
 	data []PPlace
+	matchPlacesNumbers []int
 }
 
 func (pp *ParkingPlaces) LoadData (name string) {
@@ -98,8 +99,15 @@ func (pp *ParkingPlaces) LoadData (name string) {
 			panic(err1)
 		}
 
+		realPPlaceNumberstr := record[0]
+		realPPlaceNumber, err1 := strconv.Atoi(realPPlaceNumberstr)
+		if err1 != nil {
+			panic(err1)
+		}
+
 		pp.data = append(pp.data, PPlace{record[1][0], record[2][0], []int{timeT1,
 			timeT2, timeT3, timeT4, timeT5}, attachedTerm, taxiingTime})
+		pp.matchPlacesNumbers = append(pp.matchPlacesNumbers, realPPlaceNumber)
 		pp.amountPlaces += 1
 	}
 }
@@ -121,4 +129,7 @@ func (pp *ParkingPlaces) GetTerminalAttachedByPlaceId (n int) int {
 }
 func (pp *ParkingPlaces) GetTaxiingTimeByPlaceId (n int) int {
 	return pp.data[n].taxiingTime
+}
+func (pp *ParkingPlaces) GetMatchParkingPlaces () *[]int {
+	return &(pp.matchPlacesNumbers)
 }
