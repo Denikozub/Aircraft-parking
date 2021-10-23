@@ -11,10 +11,10 @@ import (
 func neighbour(dist abstractDistribution.Distribution) {
   folder := "C:/Users/kozub/go/src/SVO.AERO/data/"
   new_dist := &dist
-  (*new_dist).ChangeDistribution(dist.GetNextNeighbour())
+  (*new_dist).ChangeDistribution(dist.GetNextNeighbourDistribution())
   dist = *new_dist
   dist.SaveOutput(folder + "Timetable_private.csv", folder + "output.csv")
-  fmt.Println(dist.CalculateFitnessValue())
+  fmt.Println(dist.FitnessValue())
 }
 
 func main() {
@@ -32,6 +32,6 @@ func main() {
 
   sol := distribution.Solution{}
   sol.Initialize(&data)
-  fmt.Println(sol.CalculateFitnessValue())
+  fmt.Println(sol.FitnessValue())
   neighbour(&sol)
 }

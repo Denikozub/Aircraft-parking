@@ -5,6 +5,9 @@ import (
   "SVO.AERO/src/tableData/abstractTables"
   "SVO.AERO/src/tableData/tables"
   "math/rand"
+  "time"
+  "strconv"
+  "fmt"
 )
 
 type Solution struct {
@@ -15,7 +18,7 @@ type Solution struct {
   fitnessValue int
 }
 
-func (sol * Solution) windIntersection(plane int, pplace int, i int , iplace int) bool {
+func (sol * Solution) wingIntersection(plane int, pplace int, i int , iplace int) bool {
   planeAD := sol.data.PlanesInfo.GetArrDepByPlaneId(plane)
   var planeHasJetBridge bool
   if planeAD == 'A' {
@@ -107,10 +110,11 @@ func (sol * Solution) checkValidPPlace(dist []int, plane int, pplace int) bool {
       continue
     }
     if sol.timeIntersection(plane, pplace, i, dist[i]) {
+      fmt.Println(plane)
       if dist[i] == pplace {
         return false
       }
-      if sol.windIntersection(plane, pplace, i, dist[i]) {
+      if sol.wingIntersection(plane, pplace, i, dist[i]) {
         return false
       }
     }
@@ -122,6 +126,7 @@ func (sol * Solution) Initialize(data *abstractTables.AirportData) {
 	sol.data = data
   sol.parkingNumber = sol.data.ParkingPlacesInfo.GetNumberOfParkingPlaces()
   sol.planeNumber = sol.data.PlanesInfo.GetNumberOfPlanes()
+  rand.Seed(time.Now().UnixNano())
   for i := 0; i < sol.planeNumber; i++ {
     var pplace int
     j, max_tries := 0, sol.parkingNumber * 3
@@ -129,12 +134,16 @@ func (sol * Solution) Initialize(data *abstractTables.AirportData) {
       pplace = rand.Intn(sol.parkingNumber)
       j++
       if j > max_tries {
-        panic(1)
+        panic("Unable to init plane " + strconv.Itoa(i))
       }
     }
     sol.distribution = append(sol.distribution, pplace)
   }
   sol.fitnessValue = fitnessFunction.CalculateServiceCost(sol.data, &sol.distribution)
+}
+
+func (sol * Solution) GetDistribution() []int {
+  return sol.distribution
 }
 
 func (sol * Solution) ChangeDistribution(new_dist []int) {
@@ -147,7 +156,7 @@ func (sol * Solution) ChangeDistribution(new_dist []int) {
   sol.fitnessValue = fitnessFunction.CalculateServiceCost(sol.data, &sol.distribution)
 }
 
-func (sol * Solution) GetNextNeighbour() []int {
+func (sol * Solution) GetNextNeighbourDistribution() []int {
   var new_dist []int
   for i := 0; i < len(sol.distribution); i++ {
     new_dist = append(new_dist, sol.distribution[i])
@@ -159,7 +168,7 @@ func (sol * Solution) GetNextNeighbour() []int {
     pplace = rand.Intn(sol.parkingNumber)
     j++
     if j > max_tries {
-      panic(1)
+      panic("Unable to init plane " + strconv.Itoa(plane))
     }
   }
   new_dist[plane] = pplace
@@ -167,7 +176,7 @@ func (sol * Solution) GetNextNeighbour() []int {
   return new_dist
 }
 
-func (sol * Solution) CalculateFitnessValue() int {
+func (sol * Solution) FitnessValue() int {
   return sol.fitnessValue
 }
 

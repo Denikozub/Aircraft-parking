@@ -6,8 +6,9 @@ import (
 
 type Distribution interface {
 	Initialize(*abstractTables.AirportData)
+  GetDistribution() []int
   ChangeDistribution([]int)
-  GetNextNeighbour() []int
-  CalculateFitnessValue() int
+  GetNextNeighbourDistribution() []int
+  FitnessValue() int
   SaveOutput(string, string)
 }
