@@ -100,16 +100,16 @@ func (sol * Solution) timeIntersection(plane int, pplace int, i int , iplace int
   }
 }
 
-func (sol * Solution) checkValidPPlace(dist *[]int, plane int, pplace int) bool {
-  for i := 0; i < len(*dist); i++ {
+func (sol * Solution) checkValidPPlace(dist []int, plane int, pplace int) bool {
+  for i := 0; i < len(dist); i++ {
     if i == plane {
       continue
     }
-    if sol.timeIntersection(plane, pplace, i, (*dist)[i]) {
-      if (*dist)[i] == pplace {
+    if sol.timeIntersection(plane, pplace, i, dist[i]) {
+      if dist[i] == pplace {
         return false
       }
-      if sol.windIntersection(plane, pplace, i, (*dist)[i]) {
+      if sol.windIntersection(plane, pplace, i, dist[i]) {
         return false
       }
     }
