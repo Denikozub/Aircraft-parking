@@ -12,6 +12,7 @@ type Solution struct {
   parkingNumber int
   planeNumber int
   distribution []int
+  fitnessValue int
 }
 
 func (sol * Solution) windIntersection(plane int, pplace int, i int , iplace int) bool {
@@ -133,6 +134,7 @@ func (sol * Solution) Initialize(data *abstractTables.AirportData) {
     }
     sol.distribution = append(sol.distribution, pplace)
   }
+  sol.fitnessValue = fitnessFunction.CalculateServiceCost(sol.data, &sol.distribution)
 }
 
 func (sol * Solution) ChangeDistribution(new_dist []int) {
@@ -142,6 +144,7 @@ func (sol * Solution) ChangeDistribution(new_dist []int) {
   for i := 0; i < len(sol.distribution); i++ {
     sol.distribution[i] = new_dist[i]
   }
+  sol.fitnessValue = fitnessFunction.CalculateServiceCost(sol.data, &sol.distribution)
 }
 
 func (sol * Solution) GetNextNeighbour() []int {
@@ -165,7 +168,7 @@ func (sol * Solution) GetNextNeighbour() []int {
 }
 
 func (sol * Solution) CalculateFitnessValue() int {
-  return fitnessFunction.CalculateServiceCost(sol.data, &sol.distribution)
+  return sol.fitnessValue
 }
 
 func (sol * Solution) SaveOutput(inputName string, outputName string) {
