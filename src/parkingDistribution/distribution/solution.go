@@ -15,43 +15,104 @@ type Solution struct {
   distribution []int
 }
 
-func (sol * Solution) checkValidPPlace(dist []int, plane int, pplace int) bool {
+func (sol * Solution) WindIntersection(plane int, pplace int, i int , iplace int) bool {
   planeAD := sol.data.PlanesInfo.GetArrDepByPlaneId(plane)
-  var hasJetBridge bool
+  var planeHasJetBridge bool
   if planeAD == 'A' {
-    hasJetBridge = sol.data.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(pplace) != 'N'
+    planeHasJetBridge = sol.data.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(pplace) != 'N'
   } else {
-    hasJetBridge = sol.data.ParkingPlacesInfo.GetJetBridgeDepByPlaceId(pplace) != 'N'
+    planeHasJetBridge = sol.data.ParkingPlacesInfo.GetJetBridgeDepByPlaceId(pplace) != 'N'
   }
+  return planeHasJetBridge &&
+    (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.PlanesInfo.GetTerminalByPlaneId(plane)) &&
+      ((sol.data.PlanesInfo.GetClassByPlaneId(i) == 'W') && (sol.data.PlanesInfo.GetClassByPlaneId(plane) == 'W')) &&
+      ((iplace - pplace == 1) || (iplace - pplace == -1))
+}
+
+func (sol * Solution) TimeIntersection(plane int, pplace int, i int , iplace int) bool {
+  planeAD := sol.data.PlanesInfo.GetArrDepByPlaneId(plane)
+  planeData := sol.data.PlanesInfo.GetDateTimeByPlaneId(plane)
+  iAD := sol.data.PlanesInfo.GetArrDepByPlaneId(i)
+  iData := sol.data.PlanesInfo.GetDateTimeByPlaneId(i)
+  planeTaxiing := sol.data.ParkingPlacesInfo.GetTaxiingTimeByPlaceId(pplace)
+  iTaxiing := sol.data.ParkingPlacesInfo.GetTaxiingTimeByPlaceId(iplace)
+  var planeHandling, iHandling int
+
+  if planeAD == 'A' {
+    if (sol.data.PlanesInfo.GetTerminalByPlaneId(plane) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(pplace)) &&
+      (sol.data.PlanesInfo.GetIntDomByPlaneId(plane) == sol.data.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(pplace)) {
+      planeHandling = sol.data.HandlingTime.GetJetBridgeHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(plane))
+    } else {
+      planeHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(plane))
+    }
+    if planeAD == iAD {
+      if (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(iplace)) &&
+          (sol.data.PlanesInfo.GetIntDomByPlaneId(i) == sol.data.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(iplace)) {
+        iHandling = sol.data.HandlingTime.GetJetBridgeHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
+      } else {
+        iHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
+      }
+      return ((planeData.Sub(iData).Minutes() > 0) && (planeData.Sub(iData).Minutes() > float64(iTaxiing + iHandling -planeTaxiing))) ||
+          ((planeData.Sub(iData).Minutes() < 0) && (planeData.Sub(iData).Minutes() > float64(planeTaxiing + planeHandling - iTaxiing)))
+      } else {
+      if (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(iplace)) &&
+          (sol.data.PlanesInfo.GetIntDomByPlaneId(i) == sol.data.ParkingPlacesInfo.GetJetBridgeDepByPlaceId(iplace)) {
+        iHandling = sol.data.HandlingTime.GetJetBridgeHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
+      } else {
+        iHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
+      }
+      if  planeData.Sub(iData).Minutes() >= 0 {
+        return false
+      } else {
+        return (iData.Sub(planeData).Minutes() <= float64(planeTaxiing + iTaxiing))  ||
+          (iData.Sub(planeData).Minutes() >= float64(iTaxiing + planeTaxiing + planeHandling + iHandling))
+      }
+    }
+  } else {
+    if (sol.data.PlanesInfo.GetTerminalByPlaneId(plane) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(pplace)) &&
+        (sol.data.PlanesInfo.GetIntDomByPlaneId(plane) == sol.data.ParkingPlacesInfo.GetJetBridgeDepByPlaceId(pplace)) {
+      planeHandling = sol.data.HandlingTime.GetJetBridgeHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(plane))
+    } else {
+      planeHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(plane))
+    }
+    if planeAD == iAD {
+      if (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(iplace)) &&
+          (sol.data.PlanesInfo.GetIntDomByPlaneId(i) == sol.data.ParkingPlacesInfo.GetJetBridgeDepByPlaceId(iplace)) {
+        iHandling = sol.data.HandlingTime.GetJetBridgeHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
+      } else {
+        iHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
+      }
+      return ((planeData.Sub(iData).Minutes() > 0) && (planeData.Sub(iData).Minutes() < float64(planeTaxiing + planeHandling - iTaxiing))) ||
+          ((planeData.Sub(iData).Minutes() < 0) && (planeData.Sub(iData).Minutes() < float64(iTaxiing + iHandling - planeTaxiing)))
+    } else {
+      if (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(iplace)) &&
+          (sol.data.PlanesInfo.GetIntDomByPlaneId(i) == sol.data.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(iplace)) {
+        iHandling = sol.data.HandlingTime.GetJetBridgeHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
+      } else {
+        iHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
+      }
+      if  planeData.Sub(iData).Minutes() <= 0 {
+        return false
+      } else {
+        return (iData.Sub(planeData).Minutes() <= float64(planeTaxiing + iTaxiing))  ||
+            (iData.Sub(planeData).Minutes() >= float64(iTaxiing + planeTaxiing + planeHandling + iHandling))
+      }
+    }
+  }
+}
+
+func (sol * Solution) checkValidPPlace(dist []int, plane int, pplace int) bool {
   for i := 0; i < len(dist); i++ {
     if i == plane {
       continue
     }
-    // check time intersection TODO: mnogo vsego (taxiing time everywhere, no constant / matrix)
-    if planeAD == sol.data.PlanesInfo.GetArrDepByPlaneId(i) {
-      if math.Abs(sol.data.PlanesInfo.GetDateTimeByPlaneId(i).Sub(sol.data.PlanesInfo.GetDateTimeByPlaneId(plane)).Minutes()) > 60 {
-        continue
-      }
-    } else if planeAD == 'A' {
-      diff := sol.data.PlanesInfo.GetDateTimeByPlaneId(i).Sub(sol.data.PlanesInfo.GetDateTimeByPlaneId(plane)).Minutes()
-      if diff <= 0 || diff > 2 * 60 {
-        continue
-      }
-    } else {
-      diff := sol.data.PlanesInfo.GetDateTimeByPlaneId(plane).Sub(sol.data.PlanesInfo.GetDateTimeByPlaneId(i)).Minutes()
-      if diff <= 0 || diff > 2 * 60 {
-        continue
-      }
-    }
-    // take the same place
-    if dist[i] == pplace {
-      return false
-    }
-    // check wing intersection
-    if hasJetBridge && (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.PlanesInfo.GetTerminalByPlaneId(plane)) &&
-      (sol.data.PlanesInfo.GetClassByPlaneId(i) == 'W') && (sol.data.PlanesInfo.GetClassByPlaneId(plane) == 'W') &&
-      ((dist[i] - pplace == 1) || (dist[i] - pplace == -1)) {
+    if sol.TimeIntersection(plane, pplace,i,dist[i]) {
+      if dist[i] == pplace {
         return false
+      }
+      if sol.WindIntersection(plane, pplace,i,dist[i]) {
+        return false
+      }
     }
   }
   return true
