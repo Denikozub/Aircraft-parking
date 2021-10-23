@@ -5,7 +5,6 @@ import (
   "SVO.AERO/src/tableData/abstractTables"
   "SVO.AERO/src/tableData/tables"
   "math/rand"
-  "math"
 )
 
 type Solution struct {
@@ -15,7 +14,7 @@ type Solution struct {
   distribution []int
 }
 
-func (sol * Solution) WindIntersection(plane int, pplace int, i int , iplace int) bool {
+func (sol * Solution) windIntersection(plane int, pplace int, i int , iplace int) bool {
   planeAD := sol.data.PlanesInfo.GetArrDepByPlaneId(plane)
   var planeHasJetBridge bool
   if planeAD == 'A' {
@@ -29,7 +28,7 @@ func (sol * Solution) WindIntersection(plane int, pplace int, i int , iplace int
       ((iplace - pplace == 1) || (iplace - pplace == -1))
 }
 
-func (sol * Solution) TimeIntersection(plane int, pplace int, i int , iplace int) bool {
+func (sol * Solution) timeIntersection(plane int, pplace int, i int , iplace int) bool {
   planeAD := sol.data.PlanesInfo.GetArrDepByPlaneId(plane)
   planeData := sol.data.PlanesInfo.GetDateTimeByPlaneId(plane)
   iAD := sol.data.PlanesInfo.GetArrDepByPlaneId(i)
@@ -101,16 +100,16 @@ func (sol * Solution) TimeIntersection(plane int, pplace int, i int , iplace int
   }
 }
 
-func (sol * Solution) checkValidPPlace(dist []int, plane int, pplace int) bool {
-  for i := 0; i < len(dist); i++ {
+func (sol * Solution) checkValidPPlace(dist *[]int, plane int, pplace int) bool {
+  for i := 0; i < len(*dist); i++ {
     if i == plane {
       continue
     }
-    if sol.TimeIntersection(plane, pplace,i,dist[i]) {
-      if dist[i] == pplace {
+    if sol.timeIntersection(plane, pplace, i, (*dist)[i]) {
+      if (*dist)[i] == pplace {
         return false
       }
-      if sol.WindIntersection(plane, pplace,i,dist[i]) {
+      if sol.windIntersection(plane, pplace, i, (*dist)[i]) {
         return false
       }
     }
@@ -161,6 +160,7 @@ func (sol * Solution) GetNextNeighbour() []int {
     }
   }
   new_dist[plane] = pplace
+  // return copy
   return new_dist
 }
 
@@ -168,6 +168,7 @@ func (sol * Solution) CalculateFitnessValue() int {
   return fitnessFunction.CalculateServiceCost(sol.data, sol.distribution)
 }
 
-func (sol * Solution) SaveToOutput(inputName string, outputName string) {
-  tables.WriteParkingPlacesToFile(sol.distribution, inputName, outputName)
+func (sol * Solution) SaveOutput(inputName string, outputName string) {
+  tables.WriteParkingPlacesToFile(&sol.distribution,
+      sol.data.ParkingPlacesInfo.GetMatchParkingPlaces(), inputName, outputName)
 }

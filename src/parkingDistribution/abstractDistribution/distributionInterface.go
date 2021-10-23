@@ -9,5 +9,5 @@ type Distribution interface {
   ChangeDistribution([]int)
   GetNextNeighbour() []int
   CalculateFitnessValue() int
-  SaveToOutput(string, string)
+  SaveOutput(string, string)
 }

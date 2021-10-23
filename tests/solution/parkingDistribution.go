@@ -13,7 +13,7 @@ func neighbour(dist abstractDistribution.Distribution) {
   new_dist := &dist
   (*new_dist).ChangeDistribution(dist.GetNextNeighbour())
   dist = *new_dist
-  dist.SaveToOutput(folder + "Timetable_private.csv", folder + "output.csv")
+  dist.SaveOutput(folder + "Timetable_private.csv", folder + "output.csv")
   fmt.Println(dist.CalculateFitnessValue())
 }
 
