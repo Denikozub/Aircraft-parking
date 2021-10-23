@@ -1,14 +1,17 @@
 package main
 
 import (
-  "fmt"
-  "SVO.AERO/src/FitnessFunction/abstractFunction"
   "SVO.AERO/src/FitnessFunction/function"
   "SVO.AERO/src/tableData/tables"
+  "SVO.AERO/src/parkingDistribution/distribution"
+  "SVO.AERO/src/parkingDistribution/abstractDistribution"
 )
 
-func printCost(arr []int, ffunc abstractFunction.FitnessFunction) {
-  fmt.Println(ffunc.CalculateServiceCost(arr))
+func neighbour(dist abstractDistribution.Distribution) {
+  folder := "C:/Users/kozub/go/src/SVO.AERO/data/"
+  new_dist := &dist
+  (*new_dist).ChangeDistribution((*new_dist).GetNextNeighbour())
+  (*new_dist).SaveToOutput(folder + "Timetable_Public.csv", folder + "output.csv")
 }
 
 func main() {
@@ -21,12 +24,9 @@ func main() {
   timeHandling.LoadData(folder + "Handling_Time_Public.csv")
   ratesHandling := tables.Rates{}
   ratesHandling.LoadData(folder + "Handling_Rates_Public.csv")
-
-  var arr []int
-	for i := 0; i < 5; i++ {
-		arr = append(arr, i)
-	}
   ffunc := function.Function{}
-  ffunc.Initialize(&ratesHandling, &timeHandling, &pplaces, &planes)
-  printCost(arr, &ffunc)
+
+  sol := distribution.Solution{}
+  sol.Initialize(&ratesHandling, &timeHandling, &pplaces, &planes, &ffunc)
+  neighbour(&sol)
 }

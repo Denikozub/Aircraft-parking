@@ -73,6 +73,9 @@ func (ff * Function) calculatePlaneCost (plane int, place int ) int {
 }
 
 func (ff * Function) CalculateServiceCost (planes []int) int {
+	if len(planes) != ff.PlanesInfo.GetNumberOfPlanes() {
+		panic(1)
+	}
 	cost, i := 0, 0
 	for ; i < len(planes); i++ {
 		cost += ff.calculatePlaneCost(i, planes[i])

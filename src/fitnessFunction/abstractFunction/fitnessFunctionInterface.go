@@ -1,4 +1,4 @@
-package abstract
+package abstractFunction
 
 import "SVO.AERO/src/tableData/abstract"
 
