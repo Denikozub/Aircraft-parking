@@ -24,6 +24,3 @@ func Anneal(data *abstractTables.AirportData, dist abstractDistribution.Distribu
   }
   dist.SaveOutput(inputName, outputName)
 }
-
-// dist := distribution.Solution{}
-// Anneal(&data, &dist)
