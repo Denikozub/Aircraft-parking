@@ -21,5 +21,5 @@ func main() {
   data := abstractTables.AirportData{&ratesHandling, &timeHandling, &pplaces, &planes}
   dist := distribution.Solution{}
 
-  simulatedAnnealing.Anneal(&data, &dist, 100, 1000., 0.99, 1, folder + "Timetable_private.csv", folder + "output.csv")
+  simulatedAnnealing.Anneal(&data, &dist, 10000, 1000., 0.99, 1, folder + "Timetable_private.csv", folder + "output.csv")
 }

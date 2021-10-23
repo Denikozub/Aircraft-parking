@@ -10,9 +10,9 @@ import (
 
 func neighbour(dist abstractDistribution.Distribution) {
   folder := "C:/Users/kozub/go/src/SVO.AERO/data/"
-  new_dist := &dist
-  (*new_dist).ChangeDistribution(dist.GetNextNeighbourDistribution())
-  dist = *new_dist
+  newDist := &dist
+  (*newDist).ChangeDistribution(dist.GetNextNeighbourDistribution())
+  dist = *newDist
   dist.SaveOutput(folder + "Timetable_private.csv", folder + "output.csv")
   fmt.Println(dist.FitnessValue())
 }

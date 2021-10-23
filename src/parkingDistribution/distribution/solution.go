@@ -40,69 +40,71 @@ func (sol * Solution) timeIntersection(plane int, pplace int, i int , iplace int
   planeTaxiing := sol.data.ParkingPlacesInfo.GetTaxiingTimeByPlaceId(pplace)
   iTaxiing := sol.data.ParkingPlacesInfo.GetTaxiingTimeByPlaceId(iplace)
   var planeHandling, iHandling int
-
+  var terminalUse bool
   if planeAD == 'A' {
-    if (sol.data.PlanesInfo.GetTerminalByPlaneId(plane) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(pplace)) &&
-      (sol.data.PlanesInfo.GetIntDomByPlaneId(plane) == sol.data.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(pplace)) {
+    terminalUse = (sol.data.PlanesInfo.GetTerminalByPlaneId(plane) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(pplace)) &&
+        (sol.data.PlanesInfo.GetIntDomByPlaneId(plane) == sol.data.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(pplace))
+    if terminalUse {
       planeHandling = sol.data.HandlingTime.GetJetBridgeHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(plane))
     } else {
       planeHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(plane))
     }
     if planeAD == iAD {
-      if (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(iplace)) &&
-          (sol.data.PlanesInfo.GetIntDomByPlaneId(i) == sol.data.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(iplace)) {
+      terminalUse = (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(iplace)) &&
+          (sol.data.PlanesInfo.GetIntDomByPlaneId(i) == sol.data.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(iplace))
+      if terminalUse {
         iHandling = sol.data.HandlingTime.GetJetBridgeHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
       } else {
         iHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
       }
-      return ((planeData.Sub(iData).Minutes() > 0) && (planeData.Sub(iData).Minutes() > float64(iTaxiing + iHandling -planeTaxiing))) ||
-          ((planeData.Sub(iData).Minutes() < 0) && (planeData.Sub(iData).Minutes() > float64(planeTaxiing + planeHandling - iTaxiing)))
-      } else {
-      if (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(iplace)) &&
-          (sol.data.PlanesInfo.GetIntDomByPlaneId(i) == sol.data.ParkingPlacesInfo.GetJetBridgeDepByPlaceId(iplace)) {
+      return !((planeData.Sub(iData).Minutes() >= 0) && (planeData.Sub(iData).Minutes() <= float64(iTaxiing + iHandling -planeTaxiing))) &&
+          !((planeData.Sub(iData).Minutes() < 0) && (planeData.Sub(iData).Minutes() <= float64(planeTaxiing + planeHandling - iTaxiing)))
+    } else {
+      terminalUse = (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(iplace)) &&
+          (sol.data.PlanesInfo.GetIntDomByPlaneId(i) == sol.data.ParkingPlacesInfo.GetJetBridgeDepByPlaceId(iplace))
+      if  terminalUse {
         iHandling = sol.data.HandlingTime.GetJetBridgeHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
       } else {
         iHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
       }
-      if  planeData.Sub(iData).Minutes() >= 0 {
-        return false
-      } else {
-        return (iData.Sub(planeData).Minutes() <= float64(planeTaxiing + iTaxiing))  ||
-          (iData.Sub(planeData).Minutes() >= float64(iTaxiing + planeTaxiing + planeHandling + iHandling))
-      }
+      return planeData.Sub(iData).Minutes() <= 0 && !(iData.Sub(planeData).Minutes() <= float64(planeTaxiing + iTaxiing)) &&
+          !(iData.Sub(planeData).Minutes() >= float64(iTaxiing + planeTaxiing + planeHandling + iHandling))
     }
   } else {
-    if (sol.data.PlanesInfo.GetTerminalByPlaneId(plane) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(pplace)) &&
-        (sol.data.PlanesInfo.GetIntDomByPlaneId(plane) == sol.data.ParkingPlacesInfo.GetJetBridgeDepByPlaceId(pplace)) {
+    // посчитать handling plane
+    terminalUse =  (sol.data.PlanesInfo.GetTerminalByPlaneId(plane) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(pplace)) &&
+        (sol.data.PlanesInfo.GetIntDomByPlaneId(plane) == sol.data.ParkingPlacesInfo.GetJetBridgeDepByPlaceId(pplace))
+    if terminalUse {
       planeHandling = sol.data.HandlingTime.GetJetBridgeHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(plane))
     } else {
       planeHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(plane))
     }
     if planeAD == iAD {
-      if (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(iplace)) &&
-          (sol.data.PlanesInfo.GetIntDomByPlaneId(i) == sol.data.ParkingPlacesInfo.GetJetBridgeDepByPlaceId(iplace)) {
+      // посчитать handling i
+      terminalUse = (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(iplace)) &&
+          (sol.data.PlanesInfo.GetIntDomByPlaneId(i) == sol.data.ParkingPlacesInfo.GetJetBridgeDepByPlaceId(iplace))
+      if terminalUse {
         iHandling = sol.data.HandlingTime.GetJetBridgeHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
       } else {
         iHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
       }
-      return ((planeData.Sub(iData).Minutes() > 0) && (planeData.Sub(iData).Minutes() < float64(planeTaxiing + planeHandling - iTaxiing))) ||
-          ((planeData.Sub(iData).Minutes() < 0) && (planeData.Sub(iData).Minutes() < float64(iTaxiing + iHandling - planeTaxiing)))
+      return !((planeData.Sub(iData).Minutes() >= 0) && (planeData.Sub(iData).Minutes() <= float64(planeTaxiing + planeHandling - iTaxiing))) &&
+          !((planeData.Sub(iData).Minutes() < 0) && (planeData.Sub(iData).Minutes() <= float64(iTaxiing + iHandling - planeTaxiing)))
     } else {
-      if (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(iplace)) &&
-          (sol.data.PlanesInfo.GetIntDomByPlaneId(i) == sol.data.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(iplace)) {
+      // посчитать handling plane
+      terminalUse = (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(iplace)) &&
+          (sol.data.PlanesInfo.GetIntDomByPlaneId(i) == sol.data.ParkingPlacesInfo.GetJetBridgeArrByPlaceId(iplace))
+      if terminalUse {
         iHandling = sol.data.HandlingTime.GetJetBridgeHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
-      } else {
-        iHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
-      }
-      if  planeData.Sub(iData).Minutes() <= 0 {
-        return false
-      } else {
-        return (iData.Sub(planeData).Minutes() <= float64(planeTaxiing + iTaxiing))  ||
-            (iData.Sub(planeData).Minutes() >= float64(iTaxiing + planeTaxiing + planeHandling + iHandling))
-      }
+          } else {
+            iHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
+          }
+      return planeData.Sub(iData).Minutes() > 0 && !(iData.Sub(planeData).Minutes() <= float64(planeTaxiing + iTaxiing)) &&
+          !(iData.Sub(planeData).Minutes() >= float64(iTaxiing + planeTaxiing + planeHandling + iHandling))
     }
   }
 }
+
 
 func (sol * Solution) checkValidPPlace(dist []int, plane int, pplace int) bool {
   for i := 0; i < len(dist); i++ {
@@ -110,7 +112,6 @@ func (sol * Solution) checkValidPPlace(dist []int, plane int, pplace int) bool {
       continue
     }
     if sol.timeIntersection(plane, pplace, i, dist[i]) {
-      fmt.Println(plane)
       if dist[i] == pplace {
         return false
       }
@@ -126,14 +127,15 @@ func (sol * Solution) Initialize(data *abstractTables.AirportData) {
 	sol.data = data
   sol.parkingNumber = sol.data.ParkingPlacesInfo.GetNumberOfParkingPlaces()
   sol.planeNumber = sol.data.PlanesInfo.GetNumberOfPlanes()
+
   rand.Seed(time.Now().UnixNano())
+  var pplace int
+  maxTries := sol.parkingNumber * 3
+
   for i := 0; i < sol.planeNumber; i++ {
-    var pplace int
-    j, max_tries := 0, sol.parkingNumber * 3
-    for ok := true; ok; ok = !sol.checkValidPPlace(sol.distribution[:i], i, pplace) {
+    for ok, j := true, 0; ok; ok, j = !sol.checkValidPPlace(sol.distribution[:i], i, pplace), j+1 {
       pplace = rand.Intn(sol.parkingNumber)
-      j++
-      if j > max_tries {
+      if j > maxTries {
         panic("Unable to init plane " + strconv.Itoa(i))
       }
     }
@@ -146,34 +148,45 @@ func (sol * Solution) GetDistribution() []int {
   return sol.distribution
 }
 
-func (sol * Solution) ChangeDistribution(new_dist []int) {
-  if len(new_dist) != len(sol.distribution) {
+func (sol * Solution) ChangeDistribution(newDist []int) {
+  if len(newDist) != len(sol.distribution) {
     panic("Array lengths are different!")
   }
   for i := 0; i < len(sol.distribution); i++ {
-    sol.distribution[i] = new_dist[i]
+    sol.distribution[i] = newDist[i]
   }
   sol.fitnessValue = fitnessFunction.CalculateServiceCost(sol.data, &sol.distribution)
 }
 
 func (sol * Solution) GetNextNeighbourDistribution() []int {
-  var new_dist []int
+  var newDist []int
   for i := 0; i < len(sol.distribution); i++ {
-    new_dist = append(new_dist, sol.distribution[i])
+    newDist = append(newDist, sol.distribution[i])
   }
-  plane := rand.Intn(sol.planeNumber)
-  var pplace int
-  j, max_tries := 0, sol.parkingNumber * 3
-  for ok := true; ok; ok = !sol.checkValidPPlace(sol.distribution, plane, pplace) {
-    pplace = rand.Intn(sol.parkingNumber)
-    j++
-    if j > max_tries {
-      panic("Unable to init plane " + strconv.Itoa(plane))
+
+  rand.Seed(time.Now().UnixNano())
+  var pplace, plane int
+  maxPplaceTries := sol.parkingNumber * 3
+  maxNeighbourTries := 50
+
+  for k := 0; k < maxNeighbourTries; k++ {
+    plane := rand.Intn(sol.planeNumber)
+    limitReached := false
+    for ok, j := true, 0; ok && !limitReached; ok, j = !sol.checkValidPPlace(sol.distribution, plane, pplace), j+1 {
+      pplace = rand.Intn(sol.parkingNumber)
+      limitReached = j >= maxPplaceTries
     }
+    if !limitReached {
+      break
+    }
+    if k == maxNeighbourTries - 1 {
+      panic("Unable to get neighbout. "  + strconv.Itoa(maxNeighbourTries) + " tries failed.")
+    }
+    fmt.Println("Unable to alter plane " + strconv.Itoa(plane) + ". Trying next one...")
   }
-  new_dist[plane] = pplace
-  // return copy
-  return new_dist
+
+  newDist[plane] = pplace
+  return newDist
 }
 
 func (sol * Solution) FitnessValue() int {

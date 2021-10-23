@@ -5,6 +5,7 @@ import (
   "SVO.AERO/src/parkingDistribution/abstractDistribution"
   "math/rand"
   "math"
+  "fmt"
 )
 
 func Anneal(data *abstractTables.AirportData, dist abstractDistribution.Distribution,
@@ -23,4 +24,5 @@ func Anneal(data *abstractTables.AirportData, dist abstractDistribution.Distribu
     temp *= anneal
   }
   dist.SaveOutput(inputName, outputName)
+  fmt.Println(dist.FitnessValue())
 }
