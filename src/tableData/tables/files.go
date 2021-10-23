@@ -54,7 +54,7 @@ func WriteParkingPlacesToFile(parkingPlaces *[]int, realParkingPlaces *[]int, in
 		}
 		pPlace := (*parkingPlaces)[i]
 		pPlace = (*realParkingPlaces)[pPlace]
-		record[11] = strconv.FormatInt(int64(pPlace), 11)
+		record[11] = strconv.FormatInt(int64(pPlace), 10)
 		err = writer.Write(record)
 	}
 }

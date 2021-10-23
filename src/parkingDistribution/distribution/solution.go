@@ -16,6 +16,7 @@ type Solution struct {
   planeNumber int
   distribution []int
   fitnessValue int
+  nextPlane int
 }
 
 func (sol * Solution) wingIntersection(plane int, pplace int, i int , iplace int) bool {
@@ -57,7 +58,7 @@ func (sol * Solution) timeIntersection(plane int, pplace int, i int , iplace int
       } else {
         iHandling = sol.data.HandlingTime.GetAwayHandlingTimeByPlaneClass(sol.data.PlanesInfo.GetClassByPlaneId(i))
       }
-      return !((planeData.Sub(iData).Minutes() >= 0) && (planeData.Sub(iData).Minutes() <= float64(iTaxiing + iHandling -planeTaxiing))) &&
+      return !((planeData.Sub(iData).Minutes() >= 0) && (planeData.Sub(iData).Minutes() <= float64(iTaxiing + iHandling - planeTaxiing))) &&
           !((planeData.Sub(iData).Minutes() < 0) && (planeData.Sub(iData).Minutes() <= float64(planeTaxiing + planeHandling - iTaxiing)))
     } else {
       terminalUse = (sol.data.PlanesInfo.GetTerminalByPlaneId(i) == sol.data.ParkingPlacesInfo.GetTerminalAttachedByPlaceId(iplace)) &&
@@ -119,7 +120,8 @@ func (sol * Solution) checkValidPPlace(dist []int, plane int, pplace int) bool {
 }
 
 func (sol * Solution) Initialize(data *abstractTables.AirportData) {
-	sol.data = data
+  sol.nextPlane = 0
+  sol.data = data
   sol.parkingNumber = sol.data.ParkingPlacesInfo.GetNumberOfParkingPlaces()
   sol.planeNumber = sol.data.PlanesInfo.GetNumberOfPlanes()
 
@@ -156,6 +158,7 @@ func (sol * Solution) ChangeDistribution(newDist []int) {
     panic("Array lengths are different!")
   }
   copy(sol.distribution, newDist)
+  newDist = nil
   sol.fitnessValue = fitnessFunction.CalculateServiceCost(sol.data, &sol.distribution)
 }
 
@@ -168,7 +171,8 @@ func (sol * Solution) GetNextNeighbourDistribution() []int {
   maxNeighbourTries := 50
 
   for k := 0; k < maxNeighbourTries; k++ {
-    plane = rand.Intn(sol.planeNumber)
+    plane = sol.nextPlane % sol.planeNumber
+    sol.nextPlane += 1
     limitReached := false
     for ok, j := true, 0; ok && !limitReached; ok, j = !sol.checkValidPPlace(sol.distribution, plane, pplace), j+1 {
       pplace = rand.Intn(sol.parkingNumber)

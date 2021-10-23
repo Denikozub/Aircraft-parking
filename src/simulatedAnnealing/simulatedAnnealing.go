@@ -25,6 +25,7 @@ func Anneal(data *abstractTables.AirportData, max_iters int, init_temp float64,
       dist.ChangeDistribution(newDist.GetDistribution())
     }
     temp *= anneal
+    fmt.Println(temp)
   }
   dist.SaveOutput(inputName, outputName)
   fmt.Println(dist.FitnessValue())
