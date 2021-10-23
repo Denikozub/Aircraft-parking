@@ -57,11 +57,11 @@ func calculatePlaneCost (data *abstractTables.AirportData, plane int, place int 
 	return sum
 }
 
-func CalculateServiceCost (data *abstractTables.AirportData, planes []int) int {
+func CalculateServiceCost (data *abstractTables.AirportData, planes *[]int) int {
 
 	cost, i := 0, 0
-	for ; i < len(planes); i++ {
-		cost += calculatePlaneCost(data, i, planes[i])
+	for ; i < len(*planes); i++ {
+		cost += calculatePlaneCost(data, i, (*planes)[i])
 	}
 	return cost
 }

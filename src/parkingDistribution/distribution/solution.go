@@ -165,7 +165,7 @@ func (sol * Solution) GetNextNeighbour() []int {
 }
 
 func (sol * Solution) CalculateFitnessValue() int {
-  return fitnessFunction.CalculateServiceCost(sol.data, sol.distribution)
+  return fitnessFunction.CalculateServiceCost(sol.data, &sol.distribution)
 }
 
 func (sol * Solution) SaveOutput(inputName string, outputName string) {
