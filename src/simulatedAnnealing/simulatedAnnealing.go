@@ -5,14 +5,15 @@ import (
   "SVO.AERO/src/parkingDistribution/abstractDistribution"
 )
 
-func anneal(data *abstractTables.AirportData, dist *abstractDistribution.Distribution) {
+func Anneal(data *abstractTables.AirportData, dist *abstractDistribution.Distribution) {
+  // dist - initial solution
   // dist.Initialize(data)
   // new_dist := &dist
   // for ...
     // for ...
       // (*new_dist).ChangeDistribution(dist.GetNextNeighbour())
       // new_dist_cost := (*new_dist).CalculateFitnessValue()
-      // if ...
+      // if new_dist_cost < dist.CalculateFitnessValue()
         // dist = *new_dist
       // else
         // ...
@@ -20,3 +21,6 @@ func anneal(data *abstractTables.AirportData, dist *abstractDistribution.Distrib
           // dist = *new_dist
   // dist.SaveToOutput(...)
 }
+
+// dist := distribution.Solution{}
+// Anneal(&data, &dist)
