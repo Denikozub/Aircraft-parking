@@ -19,5 +19,5 @@ func main() {
   ratesHandling.LoadData(folder + "Handling_Rates_Private.csv")
   data := abstractTables.AirportData{&ratesHandling, &timeHandling, &pplaces, &planes}
 
-  simulatedAnnealing.Anneal(&data, 1000000, 1000., 0.9999, 1, folder + "Timetable_private.csv", folder + "output.csv")
+  simulatedAnnealing.Anneal(&data, 100000, 100., 0.9999999, 1, folder + "Timetable_private.csv", folder + "output.csv")
 }

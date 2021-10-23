@@ -13,7 +13,6 @@ func Anneal(data *abstractTables.AirportData, max_iters int, init_temp float64,
 
   dist := distribution.Solution{}
   dist.Initialize(data)
-  fmt.Println(dist.FitnessValue())
   newDist := distribution.Solution{}
   newDist.Initialize(data)
 
@@ -22,12 +21,10 @@ func Anneal(data *abstractTables.AirportData, max_iters int, init_temp float64,
   for i := 0; i < max_iters; i++ {
     newDist.ChangeDistribution(dist.GetNextNeighbourDistribution())
     delta = newDist.FitnessValue() - dist.FitnessValue()
-    // fmt.Println(delta)
     if delta < 0 || rand.Float64() < math.Exp(- float64(delta) / (bolzman * temp)) {
       dist.ChangeDistribution(newDist.GetDistribution())
     }
     temp *= anneal
-    fmt.Println(temp)
   }
   dist.SaveOutput(inputName, outputName)
   fmt.Println(dist.FitnessValue())

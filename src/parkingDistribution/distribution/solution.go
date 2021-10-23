@@ -143,6 +143,14 @@ func (sol * Solution) GetDistribution() []int {
   return sol.distribution
 }
 
+func (sol * Solution) Sum() int {
+  sum := 0
+  for i := 0; i < len(sol.distribution); i++ {
+    sum += sol.distribution[i]
+  }
+  return sum
+}
+
 func (sol * Solution) ChangeDistribution(newDist []int) {
   if len(newDist) != len(sol.distribution) {
     panic("Array lengths are different!")
@@ -155,13 +163,12 @@ func (sol * Solution) GetNextNeighbourDistribution() []int {
   newDist := make([]int, len(sol.distribution))
   copy(newDist, sol.distribution)
 
-  rand.Seed(time.Now().UnixNano())
   var pplace, plane int
   maxPplaceTries := sol.parkingNumber * 3
   maxNeighbourTries := 50
 
   for k := 0; k < maxNeighbourTries; k++ {
-    plane := rand.Intn(sol.planeNumber)
+    plane = rand.Intn(sol.planeNumber)
     limitReached := false
     for ok, j := true, 0; ok && !limitReached; ok, j = !sol.checkValidPPlace(sol.distribution, plane, pplace), j+1 {
       pplace = rand.Intn(sol.parkingNumber)
