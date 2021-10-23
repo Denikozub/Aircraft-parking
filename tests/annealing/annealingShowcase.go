@@ -1,21 +1,11 @@
 package main
 
 import (
-  "fmt"
   "SVO.AERO/src/tableData/tables"
   "SVO.AERO/src/tableData/abstractTables"
   "SVO.AERO/src/parkingDistribution/distribution"
   "SVO.AERO/src/simulatedAnnealing"
 )
-
-func neighbour(dist abstractDistribution.Distribution) {
-  folder := "C:/Users/kozub/go/src/SVO.AERO/data/"
-  new_dist := &dist
-  (*new_dist).ChangeDistribution(dist.GetNextNeighbourDistribution())
-  dist = *new_dist
-  dist.SaveOutput(folder + "Timetable_private.csv", folder + "output.csv")
-  fmt.Println(dist.FitnessValue())
-}
 
 func main() {
   folder := "C:/Users/kozub/go/src/SVO.AERO/data/"
