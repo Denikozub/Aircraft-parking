@@ -9,5 +9,5 @@ func main() {
 	}
 
 	folder := "C:/Users/kozub/go/src/SVO.AERO/data/"
-	tables.WriteParkingPlacesToFile(arr, folder + "Timetable_Public.csv", folder + "output.csv")
+	tables.WriteParkingPlacesToFile(arr, folder + "Timetable_private.csv", folder + "output.csv")
 }

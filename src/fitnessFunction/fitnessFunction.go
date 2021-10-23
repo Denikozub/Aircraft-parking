@@ -58,9 +58,7 @@ func calculatePlaneCost (data *abstractTables.AirportData, plane int, place int 
 }
 
 func CalculateServiceCost (data *abstractTables.AirportData, planes []int) int {
-	if len(planes) != data.PlanesInfo.GetNumberOfPlanes() {
-		panic("Array lengths are different!")
-	}
+
 	cost, i := 0, 0
 	for ; i < len(planes); i++ {
 		cost += calculatePlaneCost(data, i, planes[i])

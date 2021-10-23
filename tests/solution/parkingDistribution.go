@@ -13,7 +13,7 @@ func neighbour(dist abstractDistribution.Distribution) {
   new_dist := &dist
   (*new_dist).ChangeDistribution(dist.GetNextNeighbour())
   dist = *new_dist
-  dist.SaveToOutput(folder + "Timetable_Public.csv", folder + "output.csv")
+  dist.SaveToOutput(folder + "Timetable_private.csv", folder + "output.csv")
   fmt.Println(dist.CalculateFitnessValue())
 }
 
@@ -21,13 +21,13 @@ func main() {
   folder := "C:/Users/kozub/go/src/SVO.AERO/data/"
 
   planes := tables.Planes{}
-  planes.LoadData(folder + "Timetable_Public.csv")
+  planes.LoadData(folder + "Timetable_private.csv")
   pplaces := tables.ParkingPlaces{}
-  pplaces.LoadData(folder + "Aircraft_Stands_Public.csv")
+  pplaces.LoadData(folder + "Aircraft_Stands_Private.csv")
   timeHandling := tables.HTime{}
-  timeHandling.LoadData(folder + "Handling_Time_Public.csv")
+  timeHandling.LoadData(folder + "Handling_Time_Private.csv")
   ratesHandling := tables.Rates{}
-  ratesHandling.LoadData(folder + "Handling_Rates_Public.csv")
+  ratesHandling.LoadData(folder + "Handling_Rates_Private.csv")
   data := abstractTables.AirportData{&ratesHandling, &timeHandling, &pplaces, &planes}
 
   sol := distribution.Solution{}
