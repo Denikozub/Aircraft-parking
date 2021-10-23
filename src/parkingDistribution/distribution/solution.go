@@ -111,13 +111,8 @@ func (sol * Solution) checkValidPPlace(dist []int, plane int, pplace int) bool {
     if i == plane {
       continue
     }
-    if sol.timeIntersection(plane, pplace, i, dist[i]) {
-      if dist[i] == pplace {
-        return false
-      }
-      if sol.wingIntersection(plane, pplace, i, dist[i]) {
-        return false
-      }
+    if (dist[i] == pplace || sol.wingIntersection(plane, pplace, i, dist[i])) && sol.timeIntersection(plane, pplace, i, dist[i]) {
+      return false
     }
   }
   return true
@@ -152,17 +147,13 @@ func (sol * Solution) ChangeDistribution(newDist []int) {
   if len(newDist) != len(sol.distribution) {
     panic("Array lengths are different!")
   }
-  for i := 0; i < len(sol.distribution); i++ {
-    sol.distribution[i] = newDist[i]
-  }
+  copy(sol.distribution, newDist)
   sol.fitnessValue = fitnessFunction.CalculateServiceCost(sol.data, &sol.distribution)
 }
 
 func (sol * Solution) GetNextNeighbourDistribution() []int {
-  var newDist []int
-  for i := 0; i < len(sol.distribution); i++ {
-    newDist = append(newDist, sol.distribution[i])
-  }
+  newDist := make([]int, len(sol.distribution))
+  copy(newDist, sol.distribution)
 
   rand.Seed(time.Now().UnixNano())
   var pplace, plane int

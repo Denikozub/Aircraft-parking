@@ -9,12 +9,13 @@ import (
 )
 
 func neighbour(dist abstractDistribution.Distribution) {
-  folder := "C:/Users/kozub/go/src/SVO.AERO/data/"
+  // folder := "C:/Users/kozub/go/src/SVO.AERO/data/"
   newDist := &dist
   (*newDist).ChangeDistribution(dist.GetNextNeighbourDistribution())
-  dist = *newDist
-  dist.SaveOutput(folder + "Timetable_private.csv", folder + "output.csv")
+  // dist = *newDist
+  // dist.SaveOutput(folder + "Timetable_private.csv", folder + "output.csv")
   fmt.Println(dist.FitnessValue())
+  fmt.Println((*newDist).FitnessValue())
 }
 
 func main() {
@@ -30,8 +31,12 @@ func main() {
   ratesHandling.LoadData(folder + "Handling_Rates_Private.csv")
   data := abstractTables.AirportData{&ratesHandling, &timeHandling, &pplaces, &planes}
 
-  sol := distribution.Solution{}
-  sol.Initialize(&data)
-  fmt.Println(sol.FitnessValue())
-  neighbour(&sol)
+  dist := distribution.Solution{}
+  dist.Initialize(&data)
+  newDist := distribution.Solution{}
+  newDist.Initialize(&data)
+  newDist.ChangeDistribution(dist.GetNextNeighbourDistribution())
+  fmt.Println(newDist.FitnessValue(), newDist.FitnessValue() - dist.FitnessValue())
+  dist.ChangeDistribution(newDist.GetDistribution())
+  fmt.Println(newDist.FitnessValue(), newDist.FitnessValue() - dist.FitnessValue())
 }

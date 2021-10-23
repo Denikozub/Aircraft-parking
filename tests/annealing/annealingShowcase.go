@@ -3,7 +3,6 @@ package main
 import (
   "SVO.AERO/src/tableData/tables"
   "SVO.AERO/src/tableData/abstractTables"
-  "SVO.AERO/src/parkingDistribution/distribution"
   "SVO.AERO/src/simulatedAnnealing"
 )
 
@@ -19,7 +18,6 @@ func main() {
   ratesHandling := tables.Rates{}
   ratesHandling.LoadData(folder + "Handling_Rates_Private.csv")
   data := abstractTables.AirportData{&ratesHandling, &timeHandling, &pplaces, &planes}
-  dist := distribution.Solution{}
 
-  simulatedAnnealing.Anneal(&data, &dist, 10000, 1000., 0.99, 1, folder + "Timetable_private.csv", folder + "output.csv")
+  simulatedAnnealing.Anneal(&data, 1000000, 1000., 0.9999, 1, folder + "Timetable_private.csv", folder + "output.csv")
 }
